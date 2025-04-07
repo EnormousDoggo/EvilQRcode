@@ -10,11 +10,15 @@ db = SQLAlchemy(app)
 
 class UserConnection(db.Model):
     id = db.Column(db.String(36), primary_key=True)
+    ip = db.Column(db.String(15), nullable=False)
+    agent = db.Column(db.String(255), nullable=False)
     count = db.Column(db.Integer, default=1)
     last_visit = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, id):
+    def __init__(self, id, ip, agent):
         self.id = id
+        self.ip = ip
+        self.agent = agent
         self.count = 1
         self.last_visit = datetime.datetime.utcnow()
 
@@ -23,27 +27,36 @@ def index():
     user_id = request.cookies.get('user_id')
     current_time = datetime.datetime.utcnow()
 
+    print(f"User ID: {user_id}")
+    # If the user has never visited before
     if not user_id:
+        # Create a new uuid
         user_id = str(uuid.uuid4())
-        new_connection = UserConnection(id=user_id)
+        # Get users source IP
+        user_ip = request.remote_addr
+        # Get users userAgent
+        user_agent = request.user_agent.string
+        # Create a new user connection using the uuid and the ip
+        new_connection = UserConnection(user_id, user_ip, user_agent)
         db.session.add(new_connection)
         db.session.commit()
         response = make_response(jsonify(message=f"Bienvenue ! Nombre de connexions pour cet utilisateur: 1"))
         response.set_cookie('user_id', user_id)
         return response
+    # If the user ID is set in the cookie :
     else:
+        # Retrieve the users line in the database
         user_connection = UserConnection.query.filter_by(id=user_id).first()
+        # If the connection exists :
         if user_connection:
             last_visit = user_connection.last_visit
-            # Supposons qu'une nouvelle session est commencée après 30 minutes d'inactivité
-            if (current_time - last_visit).total_seconds() > 1800:
+            # Supposons qu'une nouvelle session est commencée après 3 secondes d'inactivité
+            if (current_time - last_visit).total_seconds() > 3:
                 user_connection.count += 1
             user_connection.last_visit = current_time
             db.session.commit()
         else:
-            new_connection = UserConnection(id=user_id)
-            db.session.add(new_connection)
-            db.session.commit()
+            print("Error : this user ID does not exist in the database") 
 
         return jsonify(message=f"Nombre de connexions pour cet utilisateur: {user_connection.count if user_connection else 1}")
 
