@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    image: badserver
+    container_name: badserver
+    restart: unless-stopped
+    networks:
+      - nginx-proxy-network
+
+networks:
+  nginx-proxy-network:
+    external: true
