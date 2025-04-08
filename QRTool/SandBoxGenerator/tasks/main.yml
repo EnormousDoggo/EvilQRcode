@@ -1,0 +1,18 @@
+---
+# tasks file 
+- name: Installing Docker
+  include_tasks: install_docker.yml
+  tags: ["install", "docker"]
+
+- name: Docker Networks
+  include_tasks: docker_networks.yml
+
+- name: Creating the Sandbox in a Docker Container
+  include_tasks: creating_sandbox.yml
+
+- name: Test Execution
+  include_tasks: test_execution.yml
+
+- name: Cleaning the Sandbox and Docker
+  include_tasks: cleaning.yml
+  when: cleaning|default(false)

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Page</title>
+    <script>
+        async function fetchURLs() {
+            const response = await fetch('/api/urls');
+            const data = await response.json();
+            const tableBody = document.getElementById('url-table-body');
+            tableBody.innerHTML = '';
+            data.forEach(entry => {
+                const row = `<tr>
+                    <td>${entry.url}</td>
+                    <td>${entry.timestamp}</td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        setInterval(fetchURLs, 5000); // Fetch data every 5 seconds
+        window.onload = fetchURLs;
+    </script>
+</head>
+<body>
+    <h1>Posted URLs</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>URL</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="url-table-body">
+            <!-- Dynamic content will be inserted here -->
+        </tbody>
+    </table>
+</body>
+</html>

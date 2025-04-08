@@ -1,0 +1,34 @@
+---
+# Docker network for the sandbox
+- name: "Create an isolated Docker network for the sandbox"
+  docker_network:
+    name: sandbox_network
+    driver: bridge
+    internal: no  # Allows Internet access, but isolates from the host network
+    ipam_config:
+      - subnet: "192.168.50.0/24"  # Private IP range for Kali
+  become: true
+
+- name: Check the Docker Networks List
+  command: docker network ls
+  register: docker_networks
+  changed_when: false
+
+- name: Show existing Docker networks
+  debug:
+    msg: "{{ docker_networks.stdout_lines }}"
+
+
+### Create a NAT container that acts as an internet proxy for Kali ###
+- name: Create a NAT container for Kali
+  docker_container:
+    name: sandbox_nat
+    image: alpine
+    command: >
+      sh -c "apk add --no-cache iptables && \
+             iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE && \
+             tail -f /dev/null"
+    networks:
+      - name: sandbox_network
+    privileged: yes  # Required to modify iptables
+  become: true

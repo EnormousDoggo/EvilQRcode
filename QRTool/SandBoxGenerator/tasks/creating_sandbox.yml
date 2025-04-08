@@ -1,0 +1,73 @@
+---
+# --- Creation of the Kali Sandbox ---
+- name: Check if Kali Linux image is already present
+  command: "docker images -q {{ docker_image }}"
+  register: kali_image
+  changed_when: false
+
+- name: Download Kali Linux image if missing
+  command: "docker pull {{ docker_image }}"
+  when: kali_image.stdout == ""
+  become: true
+
+- name: Create and start the Kali container on the secure network
+  docker_container:
+    name: "{{ container_name }}"
+    image: kalilinux/kali-rolling
+    state: started
+    command: sleep infinity # Permet de garder le conteneur actif
+    networks:
+      - name: sandbox_network  # ⚠️ Ajout du réseau isolé
+    dns_servers:
+      - 8.8.8.8  # ⚠️ Google DNS pour éviter les problèmes de résolution
+      - 8.8.4.4
+    restart_policy: always
+  become: true
+
+- name: Check the status of the Kali container
+  command: docker ps -f "name={{ container_name }}" --format "{{ '{{' }}.Status{{ '}}' }}"
+  register: container_status
+  changed_when: false
+
+- name: Show container status
+  debug:
+    msg: "Statut de la sandbox : {{ container_status.stdout }}"
+
+- name: Check Kali Linux version in sandbox
+  shell: "docker exec {{ container_name }} cat /etc/os-release"
+  register: kali_version
+  changed_when: false
+
+- name: Show Kali version
+  debug:
+    msg: "{{ kali_version.stdout_lines }}"
+
+- name: Install tools in the sandbox
+  shell: | 
+    docker exec -it qrcode_sandbox apt update
+    docker exec -it qrcode_sandbox apt install -y iputils-ping iproute2 curl dnsutils procps wget chromium
+  register: installed_tools
+  become: true
+
+#- name: Show installed tools
+#  debug:
+#    msg: "{{ installed_tools.stdout_lines }}"
+
+- name: Check that the network is cut off
+  shell: "docker exec -it {{ container_name }} ping -c 4 8.8.8.8"
+  register: network_test
+  ignore_errors: yes
+  changed_when: false
+
+- name: Show network test result
+  debug:
+    msg: "Network test : {{ 'No network access' if network_test.rc != 0 else 'Network access active ! ⚠️' }}"
+
+- name: Check available disk space
+  shell: "docker exec {{ container_name }} df -h /"
+  register: disk_usage
+  changed_when: false
+
+- name: Show disk space
+  debug:
+    msg: "{{ disk_usage.stdout_lines }}"

@@ -1,0 +1,25 @@
+---
+# --- Scanning the URL in the Sandbox ---
+
+#- name: Analyze URL in sandbox
+#  shell: |
+#    docker exec qrcode_sandbox wget --spider {{ url_a_tester }}
+#  register: scan_result
+#  ignore_errors: yes
+#  become: true
+
+#- name: Show analysis results
+#  debug:
+#    msg: "{{ scan_result.stdout }}"
+#  ignore_errors: yes
+
+- name: Analyze URL in sandbox
+  shell: docker exec qrcode_sandbox curl -I {{ url_a_tester }}
+  register: scan_result
+  ignore_errors: yes
+  changed_when: false
+  
+- name: Show analysis results
+  debug:
+    msg: "{{ scan_result.stdout }}"
+  ignore_errors: yes

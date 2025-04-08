@@ -1,0 +1,17 @@
+---
+- name: "Restart Docker Service"
+  systemd:
+    name: "{{ docker_svc_name }}"
+    state: restarted
+    daemon_reload: true
+
+- name: "Stop Docker Service"
+  systemd:
+    name: "{{ docker_svc_name }}"
+    state: stopped
+    daemon_reload: true
+
+- name: "Restart Docker Container"
+  docker_container:
+    name: qrcode_sandbox
+    state: restarted

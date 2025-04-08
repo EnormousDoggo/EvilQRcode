@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: true
+  roles:
+    - qr-code
+  vars:
+    url_a_tester: "https://www.google.com/"

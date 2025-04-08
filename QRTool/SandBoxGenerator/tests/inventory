@@ -1,0 +1,5 @@
+[debian]
+debian-12
+
+[debian:vars]
+ansible_user=root

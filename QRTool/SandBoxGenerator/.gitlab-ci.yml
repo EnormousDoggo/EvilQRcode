@@ -1,0 +1,38 @@
+---
+variables:
+  RUNNER_TAG:
+    value: ansible
+
+stages:
+  - check_ci_facts
+  - play_yvette
+
+before_script:
+  - whoami
+  - hostname
+  - pwd
+  - cat $CI_PROJECT_DIR/ansible.cfg 
+
+Paycheck:
+  stage: check_ci_facts
+  script:
+    - echo "Is CI enabled ? :" && echo $CI
+    - echo "Job ID is :" && echo $CI_JOB_ID
+    - echo "The actual project is located here :" && echo $CI_PROJECT_DIR 
+    - echo "Branch is :" && echo $CI_COMMIT_REF_NAME 
+    - echo $CI_COMMIT_MESSAGE 
+    - echo $CI_COMMIT_AUTHOR
+  tags:
+    - $RUNNER_TAG
+
+Deploy-I:
+  stage: play_yvette
+  script:
+    - eval "$(ssh-agent -s)"
+    - ssh-add /home/gitlab-runner/.ssh/id_rsa_gitlab
+    - ssh-add -L  # Vérifie si l'agent SSH est bien accessible
+
+    - ansible-playbook -i tests/inventory tests/playbook_tests.yml --syntax-check 
+    - ansible-playbook -i tests/inventory tests/playbook_tests.yml
+  tags:
+    - $RUNNER_TAG

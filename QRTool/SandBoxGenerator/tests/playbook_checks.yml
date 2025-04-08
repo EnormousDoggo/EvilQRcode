@@ -1,0 +1,55 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: true
+  tasks: 
+    - name: Inspecter le réseau Docker sandbox_network
+      command: docker network inspect sandbox_network
+      register: network_info
+      changed_when: false
+
+    - name: Afficher les détails du réseau
+      debug:
+        msg: "{{ network_info.stdout }}"
+
+    - name: Vérifier les conteneurs connectés au réseau sandbox_network
+      command: docker network inspect sandbox_network
+      register: network_inspect
+      changed_when: false
+
+    - name: Afficher les conteneurs connectés
+      debug:
+        msg: "{{ network_inspect.stdout }}"
+
+    - name: Obtenir l’adresse IP de la sandbox
+      command: docker inspect -f "{{'{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}'}}" qrcode_sandbox
+      register: sandbox_ip
+      changed_when: false
+
+    - name: Afficher l’IP de la sandbox
+      debug:
+        msg: "Adresse IP de la sandbox : {{ sandbox_ip.stdout }}"
+
+    - name: Installer les outils nécessaires dans la sandbox
+      shell: docker exec -it qrcode_sandbox apt install -y iputils-ping iproute2 curl dnsutils
+      become: true
+      
+    - name: Tester la résolution DNS depuis la sandbox
+      shell: docker exec qrcode_sandbox nslookup google.com
+      register: dns_test
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Afficher le résultat du test DNS
+      debug:
+        msg: "Test DNS : {{ 'OK ✅' if dns_test.rc == 0 else 'Échec ❌' }}"
+
+    - name: Tester l’accès Internet depuis la sandbox
+      shell: docker exec qrcode_sandbox curl -I https://www.google.com
+      register: internet_test
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Afficher le résultat du test Internet
+      debug:
+        msg: "Test Internet : {{ 'OK ✅' if internet_test.rc == 0 else 'Pas de connexion ❌' }}"

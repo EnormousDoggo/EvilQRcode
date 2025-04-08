@@ -1,0 +1,16 @@
+---
+# --- Cleaning the Sandbox ---
+
+- name: Stop and delete the Kali container
+  docker_container:
+    name: qrcode_sandbox
+    state: absent
+    force_kill: yes
+  become: true
+
+- name: Uninstall Docker 
+  apt:
+    name: docker-ce
+    state: absent
+  become: true
+  when: remove_docker|default(false)
