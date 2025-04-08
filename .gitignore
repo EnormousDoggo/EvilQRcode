@@ -2,3 +2,5 @@ venv/
 instance/
     connections.db
 QRTool/Webserver/venv
+VirusTotalAPI/venv
+VirusTotalAPI/.env
