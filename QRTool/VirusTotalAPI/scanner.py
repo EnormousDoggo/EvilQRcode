@@ -1,8 +1,13 @@
 import sys
 import requests
 import time
+from dotenv import load_dotenv
+import os
 
-API_KEY = "23e405c979a19e2efec0afb25836226ade27e88b6ab1523fb2459960fca1a294"  # Remplace par ta vraie clé
+load_dotenv()
+API_KEY = os.getenv("VT_API_KEY")
+if not API_KEY:
+    raise ValueError("Clé API manquante.")
 
 def scan_url(url):
     headers = {"x-apikey": API_KEY}
@@ -12,8 +17,7 @@ def scan_url(url):
     response = requests.post("https://www.virustotal.com/api/v3/urls", headers=headers, data=data)
     if response.status_code != 200:
         print("Erreur lors de l'envoi :", response.text)
-        sys.exit(1)
-
+        sys.exit(1) 
     analysis_id = response.json()["data"]["id"]
 
     # Attente avant de récupérer le rapport
@@ -28,6 +32,7 @@ def scan_url(url):
     stats = report["data"]["attributes"]["stats"]
     print(f"URL : {url}")
     print(f"Détections : {stats['malicious']} malveillants, {stats['harmless']} inoffensifs")
+    return stats
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
