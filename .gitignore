@@ -4,3 +4,4 @@ instance/
 QRTool/Webserver/venv
 VirusTotalAPI/venv
 VirusTotalAPI/.env
+.DS_Store

@@ -1,2 +1,4 @@
+requests
+load_dotenv
 flask
 flask_sqlalchemy

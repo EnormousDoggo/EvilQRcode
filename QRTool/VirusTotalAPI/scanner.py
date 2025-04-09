@@ -20,13 +20,27 @@ def scan_url(url):
         sys.exit(1) 
     analysis_id = response.json()["data"]["id"]
 
-    # Attente avant de récupérer le rapport
-    time.sleep(10)
-
-    # Récupération du rapport
+    # Attente pour récupérer le rapport
     report_url = f"https://www.virustotal.com/api/v3/analyses/{analysis_id}"
-    report_response = requests.get(report_url, headers=headers)
-    report = report_response.json()
+    timeout = 60  # Temps maximum d'attente en secondes
+    elapsed_time = 0  # Temps écoulé
+
+    while elapsed_time < timeout:
+        report_response = requests.get(report_url, headers=headers)
+        report = report_response.json()
+
+        # Vérifie si l'analyse est terminée
+        status = report["data"]["attributes"]["status"]
+        if status == "completed":
+            break
+
+        print(f"Analyse en cours, attente de 15 secondes...")
+        time.sleep(15)
+        elapsed_time += 15
+
+    if elapsed_time >= timeout:
+        print("Temps d'attente dépassé. L'analyse n'est pas terminée.")
+        sys.exit(1)
 
     # Affichage simplifié du rapport
     stats = report["data"]["attributes"]["stats"]

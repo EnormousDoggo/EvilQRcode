@@ -24,6 +24,11 @@ def process_url(url):
     # Placeholder for processing logic
     print(f"Processing URL: {url}")
 
+# Endpoint to serve Scan QR code
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 # Endpoint to handle POST requests to /url
 @app.route('/url', methods=['POST'])
 def url_endpoint():
@@ -54,4 +59,4 @@ def get_urls():
     return jsonify([{'url': url.url, 'timestamp': url.timestamp} for url in urls])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=50000)

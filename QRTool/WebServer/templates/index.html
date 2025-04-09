@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Scanner un QR Code</title>
+    <script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}"></script></head>
+<body>
+    <h1>Scanner un QR Code</h1>
+    <div id="reader" style="width: 300px;"></div>
+    <div id="result"></div>
+
+    <script>
+        function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById("result").innerText = "QR détecté : " + decodedText;
+
+            fetch("/url", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ url: decodedText })
+            }).then(response => response.json())
+              .then(data => {
+                  console.log("Réponse :", data);
+                  alert("URL enregistrée : " + decodedText);
+              }).catch(err => {
+                  console.error("Erreur :", err);
+              });
+        }
+
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>
