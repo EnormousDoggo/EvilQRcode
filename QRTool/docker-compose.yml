@@ -1,0 +1,11 @@
+services:
+  web:
+    image: qrtool
+    container_name: qrtool
+    restart: unless-stopped
+    networks:
+      - nginx-proxy-network
+
+networks:
+  nginx-proxy-network:
+    external: true

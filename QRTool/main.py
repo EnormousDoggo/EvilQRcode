@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from VirusTotalAPI.scanner import scan_url
 
 app = Flask(__name__)
 
@@ -23,6 +24,8 @@ with app.app_context():
 def process_url(url):
     # Placeholder for processing logic
     print(f"Processing URL: {url}")
+    VTresult = scan_url(url)  # Call the scan_url function from scanner.py
+    return VTresult
 
 # Endpoint to serve Scan QR code
 @app.route('/')
@@ -44,8 +47,9 @@ def url_endpoint():
     db.session.add(new_url)
     db.session.commit()
 
-    process_url(url)
-    return jsonify({'message': 'URL received and processed'}), 200
+    result = process_url(url)
+    print("URL received and processed")
+    return jsonify(result), 200
 
 # Endpoint to display the admin page
 @app.route('/admin', methods=['GET'])

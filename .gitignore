@@ -1,7 +1,6 @@
-venv/
 instance/
     connections.db
-QRTool/Webserver/venv
+QRTool/venv
 VirusTotalAPI/venv
 VirusTotalAPI/.env
 .DS_Store
