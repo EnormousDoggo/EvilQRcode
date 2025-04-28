@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ./emails.txt:/var/www/html/emails
+      - ./emails.txt:/var/www/html/emails.txt
     networks:
       - nginx-proxy-network
 
