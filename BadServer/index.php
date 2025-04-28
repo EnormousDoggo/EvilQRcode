@@ -1,5 +1,4 @@
-
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -69,10 +68,23 @@
     </style>
 </head>
 <body>
+
+<?php
+$message = '';
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['email'])) {
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        file_put_contents('emails.txt', $email . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $message = "<p style='color: green; text-align: center;'>Merci pour votre inscription !</p>";
+    } else {
+        $message = "<p style='color: red; text-align: center;'>Email invalide.</p>";
+    }
+}
+?>
+
     <!-- Matomo -->
     <script>
         var _paq = window._paq = window._paq || [];
-        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
         _paq.push(['trackPageView']);
         _paq.push(['enableLinkTracking']);
         (function () {
@@ -83,15 +95,18 @@
             g.async = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
         })();
     </script>
+
     <div class="container">
         <div class="skull">
             ☠️
         </div>
         <h1>Sécurité des QR Codes</h1>
 
+        <?php echo $message; ?>
+
         <p><em>Ce projet fait partie d'une initiative en sécurité informatique. Nous développons un outil capable d'analyser les sites web obtenus via les QR codes, afin de leur attribuer un score de confiance. L'objectif est de protéger les utilisateurs contre les risques liés à des contenus malveillants.</em></p>
 
-        <form action="save_email.php" method="POST">
+        <form method="POST">
             <label for="email">Recevez une notification lorsque notre outil sera disponible :</label><br>
             <input type="email" id="email" name="email" placeholder="Votre email" required><br>
             <input type="submit" value="S'inscrire">
@@ -123,7 +138,6 @@
             &copy; 2025 - Sensibilisation à la Cybersécurité
         </footer>
     </div>
+
 </body>
 </html>
-
-
