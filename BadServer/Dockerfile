@@ -1,14 +1,14 @@
-# Use the official Python base image
-FROM python:3-alpine
+# Utiliser une image officielle PHP légère avec serveur web intégré
+FROM php:8.2-cli
 
-# Set the working directory in the container
-WORKDIR /app
+# Définir le dossier de travail
+WORKDIR /var/www/html
 
-# Copy your index.html file to the container
-COPY index.html .
+# Copier tous les fichiers du projet dans le conteneur
+COPY . .
 
-# Expose port 80
+# Exposer le port 80
 EXPOSE 80
 
-# Run the HTTP server when the container starts
-CMD ["python", "-m", "http.server", "80"]
+# Lancer le serveur PHP interne à l'IP 0.0.0.0 sur le port 80
+CMD ["php", "-S", "0.0.0.0:80"]

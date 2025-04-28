@@ -1,8 +1,12 @@
 services:
   web:
-    image: badserver
+    build: .
     container_name: badserver
     restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./emails.txt:/var/www/html/emails
     networks:
       - nginx-proxy-network
 
