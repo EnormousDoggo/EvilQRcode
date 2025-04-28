@@ -4,3 +4,4 @@ QRTool/venv
 VirusTotalAPI/venv
 VirusTotalAPI/.env
 .DS_Store
+/BadServer/email.txt
