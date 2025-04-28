@@ -1,5 +1,5 @@
 [debian]
-debian-12
+localhost
 
 [debian:vars]
 ansible_user=root

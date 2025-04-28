@@ -1,0 +1,14 @@
+[1;35m[WARNING]: You are running the development version of Ansible. You should only[0m
+[1;35mrun Ansible from "devel" if you are modifying the Ansible engine, or trying out[0m
+[1;35mfeatures under development. This is a rapidly changing source of code and can[0m
+[1;35mbecome unstable at any point.[0m
+[0;31mERROR! the role 'qr-code' was not found in /home/user/Documents/COURS/PA/EvilQRcode/QRTool/SandBoxGenerator/tests/roles:/home/user/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/home/user/Documents/COURS/PA/EvilQRcode/QRTool/SandBoxGenerator/tests[0m
+[0;31m[0m
+[0;31mThe error appears to be in '/home/user/Documents/COURS/PA/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml': line 6, column 7, but may[0m
+[0;31mbe elsewhere in the file depending on the exact syntax problem.[0m
+[0;31m[0m
+[0;31mThe offending line appears to be:[0m
+[0;31m[0m
+[0;31m  roles:[0m
+[0;31m    - qr-code[0m
+[0;31m      ^ here[0m

@@ -1,18 +1,18 @@
 ---
 # --- Creation of the Kali Sandbox ---
 - name: Check if Kali Linux image is already present
-  command: "docker images -q {{ docker_image }}"
+  command: docker images -q kalilinux/kali-rolling
   register: kali_image
   changed_when: false
 
 - name: Download Kali Linux image if missing
-  command: "docker pull {{ docker_image }}"
+  command: docker pull kalilinux/kali-rolling
   when: kali_image.stdout == ""
   become: true
 
 - name: Create and start the Kali container on the secure network
   docker_container:
-    name: "{{ container_name }}"
+    name: qrcode_sandbox
     image: kalilinux/kali-rolling
     state: started
     command: sleep infinity # Permet de garder le conteneur actif
@@ -25,7 +25,7 @@
   become: true
 
 - name: Check the status of the Kali container
-  command: docker ps -f "name={{ container_name }}" --format "{{ '{{' }}.Status{{ '}}' }}"
+  command: docker ps -f "name=qrcode_sandbox" --format "{{ '{{' }}.Status{{ '}}' }}"
   register: container_status
   changed_when: false
 
@@ -34,7 +34,7 @@
     msg: "Statut de la sandbox : {{ container_status.stdout }}"
 
 - name: Check Kali Linux version in sandbox
-  shell: "docker exec {{ container_name }} cat /etc/os-release"
+  shell: docker exec qrcode_sandbox cat /etc/os-release
   register: kali_version
   changed_when: false
 
@@ -54,7 +54,7 @@
 #    msg: "{{ installed_tools.stdout_lines }}"
 
 - name: Check that the network is cut off
-  shell: "docker exec -it {{ container_name }} ping -c 4 8.8.8.8"
+  shell: docker exec -it qrcode_sandbox ping -c 4 8.8.8.8
   register: network_test
   ignore_errors: yes
   changed_when: false
@@ -64,7 +64,7 @@
     msg: "Network test : {{ 'No network access' if network_test.rc != 0 else 'Network access active ! ⚠️' }}"
 
 - name: Check available disk space
-  shell: "docker exec {{ container_name }} df -h /"
+  shell: docker exec qrcode_sandbox df -h /
   register: disk_usage
   changed_when: false
 

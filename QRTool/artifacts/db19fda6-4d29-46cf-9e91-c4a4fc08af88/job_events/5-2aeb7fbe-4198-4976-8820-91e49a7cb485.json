@@ -1,0 +1,1 @@
+{"event": "verbose", "uuid": "2aeb7fbe-4198-4976-8820-91e49a7cb485", "counter": 5, "stdout": "\u001b[0;31mERROR! the playbook: ./playbook_tests.yml could not be found\u001b[0m", "start_line": 4, "end_line": 5, "runner_ident": "db19fda6-4d29-46cf-9e91-c4a4fc08af88", "created": "2025-04-28T07:24:30.560052+00:00"}

@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Scanner un QR Code</title>
-    <script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}"></script></head>
+    <script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}"></script>
+</head>
 <body>
     <h1>Scanner un QR Code</h1>
     <div id="reader" style="width: 300px;"></div>
     <div id="result"></div>
+    <div id="processing" style="display: none;">Processing...</div>
+    <div id="output">
+        <h2>Malveillants</h2>
+        <ul id="malveillants-list"></ul>
+        <h2>Inoffensifs</h2>
+        <ul id="inoffensifs-list"></ul>
+    </div>
 
     <script>
         function onScanSuccess(decodedText, decodedResult) {
             document.getElementById("result").innerText = "QR détecté : " + decodedText;
+            document.getElementById("processing").style.display = "block"; // Show "Processing"
 
             fetch("/url", {
                 method: "POST",
@@ -22,9 +31,32 @@
             }).then(response => response.json())
               .then(data => {
                   console.log("Réponse :", data);
-                  alert("URL enregistrée : " + decodedText);
+                  document.getElementById("processing").style.display = "none"; // Hide "Processing"
+
+                  // Update the results dynamically
+                  const malveillantsList = document.getElementById("malveillants-list");
+                  const inoffensifsList = document.getElementById("inoffensifs-list");
+
+                  if (data.malveillants && data.malveillants.length > 0) {
+                      data.malveillants.forEach(item => {
+                          const li = document.createElement("li");
+                          li.textContent = item;
+                          malveillantsList.appendChild(li);
+                      });
+                  }
+
+                  if (data.inoffensifs && data.inoffensifs.length > 0) {
+                      data.inoffensifs.forEach(item => {
+                          const li = document.createElement("li");
+                          li.textContent = item;
+                          inoffensifsList.appendChild(li);
+                      });
+                  }
+
+                  alert("URL enregistrée et traitée : " + decodedText);
               }).catch(err => {
                   console.error("Erreur :", err);
+                  document.getElementById("processing").style.display = "none"; // Hide "Processing"
               });
         }
 
