@@ -27,7 +27,6 @@ docker_svc_enabled: true
 # Docker Network
 network_name: sandbox_network
 
-
 # Outils dans la sandbox
 docker_image: kalilinux/kali-rolling
 container_name: qrcode_sandbox

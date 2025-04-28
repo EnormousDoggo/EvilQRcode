@@ -24,8 +24,8 @@ with app.app_context():
 def process_url(url):
     # Placeholder for processing logic
     print(f"Processing URL: {url}")
-    VTresult = scan_url(url)  # Call the scan_url function from scanner.py
-    return VTresult
+    stats = scan_url(url)  # Call the scan_url function from scanner.py
+    return {"malveillants": [stats['malicious']], "inoffensifs": [stats['harmless']]}
 
 # Endpoint to serve Scan QR code
 @app.route('/')
