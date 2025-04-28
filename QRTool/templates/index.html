@@ -131,76 +131,86 @@
     </div>
 
     <script>
-    let scannerInstance;
-
-    function onScanSuccess(decodedText, decodedResult) {
-        scannerInstance.clear()
-            .then(() => {
-                console.log("Scanner arrêté avec succès.");
-
-                document.getElementById("result").innerText = "QR détecté : " + decodedText;
-                document.getElementById("processing").style.display = "block";
-
-                fetch("/url", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ url: decodedText })
-                }).then(response => response.json())
-                  .then(data => {
-                      console.log("Réponse :", data);
-                      document.getElementById("processing").style.display = "none";
-
-                      const malveillantsList = document.getElementById("malveillants-list");
-                      const inoffensifsList = document.getElementById("inoffensifs-list");
-
-                      malveillantsList.innerHTML = "";
-                      inoffensifsList.innerHTML = "";
-
-                      if (data.malveillants && data.malveillants.length > 0) {
-                          data.malveillants.forEach(item => {
-                              const li = document.createElement("li");
-                              li.textContent = item;
-                              malveillantsList.appendChild(li);
-                          });
-                      }
-
-                      if (data.inoffensifs && data.inoffensifs.length > 0) {
-                          data.inoffensifs.forEach(item => {
-                              const li = document.createElement("li");
-                              li.textContent = item;
-                              inoffensifsList.appendChild(li);
-                          });
-                      }
-
-                      alert("URL enregistrée et traitée : " + decodedText);
-
-                      // Après traitement, afficher le bouton pour rescanner
-                      document.getElementById("rescan-btn").style.display = "inline-block";
-                  }).catch(err => {
-                      console.error("Erreur :", err);
-                      document.getElementById("processing").style.display = "none";
-                  });
-            })
-            .catch((error) => {
-                console.error("Erreur en arrêtant le scanner :", error);
+        const scanner = new Html5Qrcode("reader");
+    
+        function startScanner() {
+            scanner.start(
+                { facingMode: "environment" }, // Caméra arrière
+                {
+                    fps: 10,
+                    qrbox: 250
+                },
+                onScanSuccess
+            ).catch(err => {
+                console.error("Erreur de démarrage du scanner :", err);
             });
-    }
-
-    function startScanner() {
-        scannerInstance = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: 250 });
-        scannerInstance.render(onScanSuccess);
-    }
-
-    // Lancer une première fois
-    startScanner();
-
-    // Gérer le clic sur "Rescanner"
-    document.getElementById("rescan-btn").addEventListener("click", () => {
-        document.getElementById("rescan-btn").style.display = "none";
-        document.getElementById("result").innerText = "";
+        }
+    
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log("QR détecté :", decodedText);
+    
+            // Stopper le scanner immédiatement
+            scanner.stop()
+                .then(() => {
+                    console.log("Scanner arrêté avec succès.");
+    
+                    document.getElementById("result").innerText = "QR détecté : " + decodedText;
+                    document.getElementById("processing").style.display = "block";
+    
+                    fetch("/url", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ url: decodedText })
+                    }).then(response => response.json())
+                      .then(data => {
+                          console.log("Réponse :", data);
+                          document.getElementById("processing").style.display = "none";
+    
+                          const malveillantsList = document.getElementById("malveillants-list");
+                          const inoffensifsList = document.getElementById("inoffensifs-list");
+    
+                          malveillantsList.innerHTML = "";
+                          inoffensifsList.innerHTML = "";
+    
+                          if (data.malveillants && data.malveillants.length > 0) {
+                              data.malveillants.forEach(item => {
+                                  const li = document.createElement("li");
+                                  li.textContent = item;
+                                  malveillantsList.appendChild(li);
+                              });
+                          }
+    
+                          if (data.inoffensifs && data.inoffensifs.length > 0) {
+                              data.inoffensifs.forEach(item => {
+                                  const li = document.createElement("li");
+                                  li.textContent = item;
+                                  inoffensifsList.appendChild(li);
+                              });
+                          }
+    
+                          alert("URL enregistrée et traitée : " + decodedText);
+    
+                          // Après scan et traitement : afficher le bouton Rescanner
+                          document.getElementById("rescan-btn").style.display = "inline-block";
+                      }).catch(err => {
+                          console.error("Erreur dans la réponse :", err);
+                          document.getElementById("processing").style.display = "none";
+                      });
+                })
+                .catch(err => {
+                    console.error("Erreur pour stopper le scanner :", err);
+                });
+        }
+    
+        // Lancer au début
         startScanner();
-    });
-</script>
+    
+        // Gérer bouton rescanner
+        document.getElementById("rescan-btn").addEventListener("click", () => {
+            document.getElementById("rescan-btn").style.display = "none";
+            document.getElementById("result").innerText = "";
+            startScanner();
+        });
+    </script>
 </body>
 </html>
