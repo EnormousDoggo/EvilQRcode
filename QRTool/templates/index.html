@@ -113,6 +113,12 @@
 
     <div id="reader"></div>
 
+    <div id="buttons" style="text-align: center; margin-top: 20px;">
+        <button id="rescan-btn" style="display: none; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🔄 Scanner un autre QR Code
+        </button>
+    </div>
+
     <div id="result"></div>
     <div id="processing" style="display: none;">Traitement...</div>
 
@@ -125,51 +131,76 @@
     </div>
 
     <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            document.getElementById("result").innerText = "QR détecté : " + decodedText;
-            document.getElementById("processing").style.display = "block";
+    let scannerInstance;
 
-            fetch("/url", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: decodedText })
-            }).then(response => response.json())
-              .then(data => {
-                  console.log("Réponse :", data);
-                  document.getElementById("processing").style.display = "none";
+    function onScanSuccess(decodedText, decodedResult) {
+        scannerInstance.clear()
+            .then(() => {
+                console.log("Scanner arrêté avec succès.");
 
-                  const malveillantsList = document.getElementById("malveillants-list");
-                  const inoffensifsList = document.getElementById("inoffensifs-list");
+                document.getElementById("result").innerText = "QR détecté : " + decodedText;
+                document.getElementById("processing").style.display = "block";
 
-                  malveillantsList.innerHTML = "";
-                  inoffensifsList.innerHTML = "";
+                fetch("/url", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url: decodedText })
+                }).then(response => response.json())
+                  .then(data => {
+                      console.log("Réponse :", data);
+                      document.getElementById("processing").style.display = "none";
 
-                  if (data.malveillants && data.malveillants.length > 0) {
-                      data.malveillants.forEach(item => {
-                          const li = document.createElement("li");
-                          li.textContent = item;
-                          malveillantsList.appendChild(li);
-                      });
-                  }
+                      const malveillantsList = document.getElementById("malveillants-list");
+                      const inoffensifsList = document.getElementById("inoffensifs-list");
 
-                  if (data.inoffensifs && data.inoffensifs.length > 0) {
-                      data.inoffensifs.forEach(item => {
-                          const li = document.createElement("li");
-                          li.textContent = item;
-                          inoffensifsList.appendChild(li);
-                      });
-                  }
+                      malveillantsList.innerHTML = "";
+                      inoffensifsList.innerHTML = "";
 
-                  alert("URL enregistrée et traitée : " + decodedText);
-              }).catch(err => {
-                  console.error("Erreur :", err);
-                  document.getElementById("processing").style.display = "none";
-              });
-        }
+                      if (data.malveillants && data.malveillants.length > 0) {
+                          data.malveillants.forEach(item => {
+                              const li = document.createElement("li");
+                              li.textContent = item;
+                              malveillantsList.appendChild(li);
+                          });
+                      }
 
-        const html5QrcodeScanner = new Html5QrcodeScanner(
+                      if (data.inoffensifs && data.inoffensifs.length > 0) {
+                          data.inoffensifs.forEach(item => {
+                              const li = document.createElement("li");
+                              li.textContent = item;
+                              inoffensifsList.appendChild(li);
+                          });
+                      }
+
+                      alert("URL enregistrée et traitée : " + decodedText);
+
+                      // Après traitement, afficher le bouton pour rescanner
+                      document.getElementById("rescan-btn").style.display = "inline-block";
+                  }).catch(err => {
+                      console.error("Erreur :", err);
+                      document.getElementById("processing").style.display = "none";
+                  });
+            })
+            .catch((error) => {
+                console.error("Erreur en arrêtant le scanner :", error);
+            });
+    }
+
+    function startScanner() {
+        scannerInstance = new Html5QrcodeScanner(
             "reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
-    </script>
+        scannerInstance.render(onScanSuccess);
+    }
+
+    // Lancer une première fois
+    startScanner();
+
+    // Gérer le clic sur "Rescanner"
+    document.getElementById("rescan-btn").addEventListener("click", () => {
+        document.getElementById("rescan-btn").style.display = "none";
+        document.getElementById("result").innerText = "";
+        startScanner();
+    });
+</script>
 </body>
 </html>
