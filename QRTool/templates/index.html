@@ -7,125 +7,142 @@
     <script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
+            padding: 20px;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
             color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
         h1 {
-            text-align: center;
+            font-size: 2em;
             margin: 20px 0;
+            color: #007bff;
         }
 
         #reader {
-            margin: 0 auto;
-            max-width: 100%;
-            width: 300px;
+        width: 100%;
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 15px;
+        background: white;
+        border: 2px dashed #007bff;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         #result, #processing {
             text-align: center;
-            margin: 10px 0;
+            margin: 15px 0;
             font-size: 1.2em;
         }
 
+        #processing {
+            color: #ffc107;
+            font-weight: bold;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+
         #output {
-            margin: 20px auto;
-            max-width: 90%;
-            padding: 10px;
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto 0;
+            padding: 20px;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         h2 {
-            text-align: center;
-            margin: 10px 0;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #343a40;
         }
 
-        ul {
+        .list-group {
             list-style-type: none;
             padding: 0;
+            margin: 0 0 20px 0;
         }
 
-        ul li {
-            padding: 5px;
-            border-bottom: 1px solid #ddd;
+        .list-group li {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            background: #f1f1f1;
+            transition: background 0.3s;
+            animation: fadeIn 0.6s ease;
         }
 
-        ul li:last-child {
-            border-bottom: none;
+        .list-group li:hover {
+            background: #e2e6ea;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5em;
-            }
-
-            #reader {
-                width: 100%;
-            }
-
-            #output {
-                padding: 5px;
-            }
-
-            ul li {
-                font-size: 0.9em;
-            }
+            h1 { font-size: 1.6em; }
+            h2 { font-size: 1.3em; }
+            .list-group li { font-size: 0.95em; }
         }
 
         @media (max-width: 480px) {
-            h1 {
-                font-size: 1.2em;
-            }
-
-            #result, #processing {
-                font-size: 1em;
-            }
-
-            ul li {
-                font-size: 0.8em;
-            }
+            h1 { font-size: 1.4em; }
+            h2 { font-size: 1.1em; }
+            .list-group li { font-size: 0.9em; }
+        }
+        #processing, #result {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Scanner un QR Code</h1>
+
     <div id="reader"></div>
+
     <div id="result"></div>
-    <div id="processing" style="display: none;">Processing...</div>
+    <div id="processing" style="display: none;">Traitement...</div>
+
     <div id="output">
         <h2>Malveillants</h2>
-        <ul id="malveillants-list"></ul>
+        <ul id="malveillants-list" class="list-group"></ul>
+
         <h2>Inoffensifs</h2>
-        <ul id="inoffensifs-list"></ul>
+        <ul id="inoffensifs-list" class="list-group"></ul>
     </div>
 
     <script>
         function onScanSuccess(decodedText, decodedResult) {
             document.getElementById("result").innerText = "QR détecté : " + decodedText;
-            document.getElementById("processing").style.display = "block"; // Show "Processing"
+            document.getElementById("processing").style.display = "block";
 
             fetch("/url", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ url: decodedText })
             }).then(response => response.json())
               .then(data => {
                   console.log("Réponse :", data);
-                  document.getElementById("processing").style.display = "none"; // Hide "Processing"
+                  document.getElementById("processing").style.display = "none";
 
-                  // Update the results dynamically
                   const malveillantsList = document.getElementById("malveillants-list");
                   const inoffensifsList = document.getElementById("inoffensifs-list");
 
-                  malveillantsList.innerHTML = ""; // Clear previous results
-                  inoffensifsList.innerHTML = ""; // Clear previous results
+                  malveillantsList.innerHTML = "";
+                  inoffensifsList.innerHTML = "";
 
                   if (data.malveillants && data.malveillants.length > 0) {
                       data.malveillants.forEach(item => {
@@ -146,7 +163,7 @@
                   alert("URL enregistrée et traitée : " + decodedText);
               }).catch(err => {
                   console.error("Erreur :", err);
-                  document.getElementById("processing").style.display = "none"; // Hide "Processing"
+                  document.getElementById("processing").style.display = "none";
               });
         }
 
