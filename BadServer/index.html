@@ -1,13 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
 
+    <!DOCTYPE html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EvilQRCode</title>
-    
+    <title>Sécurité des QR Codes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        ul {
+            margin-bottom: 15px;
+        }
+        .skull {
+            text-align: center;
+            font-size: 100px;
+            margin-bottom: 10px;
+            animation: blink 1s infinite alternate;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+        form {
+            margin-top: 20px;
+            text-align: center;
+        }
+        input[type="email"] {
+            padding: 10px;
+            width: 70%;
+            max-width: 300px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            background-color: #333;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
 </head>
-
 <body>
     <!-- Matomo -->
     <script>
@@ -23,14 +83,47 @@
             g.async = true; g.src = u + 'matomo.js'; s.parentNode.insertBefore(g, s);
         })();
     </script>
-    <!-- End Matomo Code -->
+    <div class="container">
+        <div class="skull">
+            ☠️
+        </div>
+        <h1>Sécurité des QR Codes</h1>
 
-    <script>
-        // Redirect the user after 5 seconds
-        setTimeout(function() {
-            window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ?autoplay=1";
-        }, 50);
-    </script>
+        <p><em>Ce projet fait partie d'une initiative en sécurité informatique. Nous développons un outil capable d'analyser les sites web obtenus via les QR codes, afin de leur attribuer un score de confiance. L'objectif est de protéger les utilisateurs contre les risques liés à des contenus malveillants.</em></p>
+
+        <form action="#" method="post">
+            <label for="email">Recevez une notification lorsque notre outil sera disponible :</label><br>
+            <input type="email" id="email" name="email" placeholder="Votre email" required><br>
+            <input type="submit" value="S'inscrire">
+        </form>
+
+        <p>Les QR codes sont omniprésents dans notre quotidien : publicités, menus de restaurant, billets électroniques, etc. Cependant, ils présentent aussi des risques de sécurité souvent sous-estimés.</p>
+
+        <h2>Risques potentiels</h2>
+        <ul>
+            <li><strong>Redirection malveillante :</strong> Un QR code peut diriger vers un site web frauduleux.</li>
+            <li><strong>Téléchargement de logiciels malveillants :</strong> Certains QR codes peuvent initier le téléchargement d’applications infectées.</li>
+            <li><strong>Vol de données :</strong> Une page falsifiée peut capturer vos informations personnelles.</li>
+            <li><strong>Faux QR codes :</strong> Des autocollants malveillants peuvent être placés sur de vrais QR codes.</li>
+        </ul>
+
+        <h2>Conseils de sécurité</h2>
+        <ul>
+            <li>Utilisez une application de scanner qui affiche l'URL avant ouverture.</li>
+            <li>Vérifiez l'origine du QR code (source fiable ? emplacement logique ?).</li>
+            <li>Méfiez-vous des QR codes imprimés dans des lieux publics sans surveillance.</li>
+            <li>Maintenez votre smartphone à jour avec les derniers correctifs de sécurité.</li>
+            <li>Ne fournissez jamais d'informations sensibles après avoir scanné un QR code sans vérification approfondie.</li>
+        </ul>
+
+        <h2>Conclusion</h2>
+        <p>Les QR codes facilitent l'accès à l'information mais peuvent également être exploités à des fins malveillantes. Une vigilance constante et quelques bonnes pratiques permettent de minimiser les risques.</p>
+
+        <footer>
+            &copy; 2025 - Sensibilisation à la Cybersécurité
+        </footer>
+    </div>
 </body>
-
 </html>
+
+
