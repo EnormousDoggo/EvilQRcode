@@ -1,13 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner un QR Code</title>
     <script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #reader {
+            margin: 0 auto;
+            max-width: 100%;
+            width: 300px;
+        }
+
+        #result, #processing {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        #output {
+            margin: 20px auto;
+            max-width: 90%;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        ul li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+
+            #reader {
+                width: 100%;
+            }
+
+            #output {
+                padding: 5px;
+            }
+
+            ul li {
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2em;
+            }
+
+            #result, #processing {
+                font-size: 1em;
+            }
+
+            ul li {
+                font-size: 0.8em;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Scanner un QR Code</h1>
-    <div id="reader" style="width: 300px;"></div>
+    <div id="reader"></div>
     <div id="result"></div>
     <div id="processing" style="display: none;">Processing...</div>
     <div id="output">
@@ -36,6 +123,9 @@
                   // Update the results dynamically
                   const malveillantsList = document.getElementById("malveillants-list");
                   const inoffensifsList = document.getElementById("inoffensifs-list");
+
+                  malveillantsList.innerHTML = ""; // Clear previous results
+                  inoffensifsList.innerHTML = ""; // Clear previous results
 
                   if (data.malveillants && data.malveillants.length > 0) {
                       data.malveillants.forEach(item => {
