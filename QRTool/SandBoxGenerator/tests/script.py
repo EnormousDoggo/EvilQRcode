@@ -15,7 +15,7 @@ def run_playbook(playbook_path, inventory_path=None, extravars=None):
 
 # Exemple d'utilisation
 run_playbook(
-    playbook_path='/home/gitlab-runner/workspace-ansible/qr-code/tests/playbook_tests.yml',
-    inventory_path='/home/gitlab-runner/workspace-ansible/qr-code/tests/inventory',
+    playbook_path='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml',
+    inventory_path='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory',
     extravars={'url_a_tester': 'https://www.google.com/'}
 )

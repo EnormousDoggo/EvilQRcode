@@ -30,7 +30,7 @@
 - name: "Set Docker APT repository variable"
   set_fact:
     docker_apt_repo: >-
-      {% if ansible_distribution_release == "bookworm" %}
+      {% if ansible_distribution == 'Ubuntu' %}
       deb [arch={{ deb_arch.stdout }} signed-by=/etc/apt/keyrings/docker.asc] {{ docker_repo_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}
       {% else %}
       deb [arch={{ deb_arch.stdout }}] {{ docker_repo_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}
