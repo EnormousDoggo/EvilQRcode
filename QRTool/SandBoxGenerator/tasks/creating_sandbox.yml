@@ -49,38 +49,38 @@
     msg: "{{ kali_version.stdout_lines }}"
   tags: ["docker", "creation_sandbox", "sandbox"]
 
-- name: Install tools in the sandbox
-  shell: | 
-    docker exec -it qrcode_sandbox apt update
-    docker exec -it qrcode_sandbox apt install -y iputils-ping iproute2 curl dnsutils procps wget chromium
-  register: installed_tools
-  become: true
-  tags: ["docker", "creation_sandbox", "sandbox"]
+# - name: Install tools in the sandbox
+#   shell: | 
+#     docker exec -it qrcode_sandbox apt update
+#     docker exec -it qrcode_sandbox apt install -y iputils-ping iproute2 curl dnsutils procps wget chromium
+#   register: installed_tools
+#   become: true
+#   tags: ["docker", "creation_sandbox", "sandbox"]
 
-#- name: Show installed tools
-#  debug:
-#    msg: "{{ installed_tools.stdout_lines }}"
-#  tags: ["docker", "creation_sandbox", "sandbox"]
+# - name: Show installed tools
+#   debug:
+#     msg: "{{ installed_tools.stdout_lines }}"
+#   tags: ["docker", "creation_sandbox", "sandbox"]
 
-- name: Check that the network is cut off
-  shell: docker exec -it qrcode_sandbox ping -c 4 8.8.8.8
-  register: network_test
-  ignore_errors: yes
-  changed_when: false
-  tags: ["docker", "creation_sandbox", "sandbox"]
+# - name: Check that the network is cut off
+#   shell: docker exec -it qrcode_sandbox ping -c 4 8.8.8.8
+#   register: network_test
+#   ignore_errors: yes
+#   changed_when: false
+#   tags: ["docker", "creation_sandbox", "sandbox"]
 
-- name: Show network test result
-  debug:
-    msg: "Network test : {{ 'No network access' if network_test.rc != 0 else 'Network access active ! ⚠️' }}"
-  tags: ["docker", "creation_sandbox", "sandbox"]
+# - name: Show network test result
+#   debug:
+#     msg: "Network test : {{ 'No network access' if network_test.rc != 0 else 'Network access active ! ⚠️' }}"
+#   tags: ["docker", "creation_sandbox", "sandbox"]
 
-- name: Check available disk space
-  shell: docker exec qrcode_sandbox df -h /
-  register: disk_usage
-  changed_when: false
-  tags: ["docker", "creation_sandbox", "sandbox"]
+# - name: Check available disk space
+#   shell: docker exec qrcode_sandbox df -h /
+#   register: disk_usage
+#   changed_when: false
+#   tags: ["docker", "creation_sandbox", "sandbox"]
 
-- name: Show disk space
-  debug:
-    msg: "{{ disk_usage.stdout_lines }}"
-  tags: ["docker", "creation_sandbox", "sandbox"]
+# - name: Show disk space
+#   debug:
+#     msg: "{{ disk_usage.stdout_lines }}"
+#   tags: ["docker", "creation_sandbox", "sandbox"]

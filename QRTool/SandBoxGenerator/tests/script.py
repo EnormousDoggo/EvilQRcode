@@ -5,14 +5,13 @@ globalPlaybook='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_t
 globalInventory='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory'
 
 def create_sandbox(url):
-    ansible_runner.run(
+    return ansible_runner.run(
         private_data_dir=globalPrivate_data_dir,
         playbook=globalPlaybook,
         inventory=globalInventory,
         tags='creation_sandbox,scan',
         extravars={'url_a_tester': 'https://www.google.com/'}
         )
-    return 0
 
 def display_result(result):
     # Récupère et affiche le résultat du scan
