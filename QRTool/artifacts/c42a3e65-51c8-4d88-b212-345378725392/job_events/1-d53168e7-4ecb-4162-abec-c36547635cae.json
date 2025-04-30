@@ -1,1 +1,0 @@
-{"event": "verbose", "uuid": "d53168e7-4ecb-4162-abec-c36547635cae", "counter": 1, "stdout": "\u001b[1;35m[WARNING]: You are running the development version of Ansible. You should only\u001b[0m", "start_line": 0, "end_line": 1, "runner_ident": "c42a3e65-51c8-4d88-b212-345378725392", "created": "2025-04-28T07:18:55.815748+00:00"}

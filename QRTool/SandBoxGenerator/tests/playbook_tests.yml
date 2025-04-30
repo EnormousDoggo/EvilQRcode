@@ -3,7 +3,8 @@
   become: yes
   gather_facts: true
   roles:
-    - qr-code
+    - SandBoxGenerator
   vars:
     url_a_tester: "https://www.google.com/"
     cleaning: true
+

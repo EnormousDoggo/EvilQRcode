@@ -29,7 +29,7 @@ Deploy-I:
   stage: play_yvette
   script:
     - eval "$(ssh-agent -s)"
-    - ssh-add /home/gitlab-runner/.ssh/id_rsa_gitlab
+    - ssh-add /root/.ssh/id_rsa_ansible
     - ssh-add -L  # Vérifie si l'agent SSH est bien accessible
 
     - ansible-playbook -i tests/inventory tests/playbook_tests.yml --syntax-check 

@@ -1,1 +1,0 @@
-{"event": "verbose", "uuid": "fea05d02-1112-40e6-9196-44aaf81ad4a1", "counter": 2, "stdout": "\u001b[1;35mrun Ansible from \"devel\" if you are modifying the Ansible engine, or trying out\u001b[0m", "start_line": 1, "end_line": 2, "runner_ident": "c42a3e65-51c8-4d88-b212-345378725392", "created": "2025-04-28T07:18:55.816408+00:00"}

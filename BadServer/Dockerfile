@@ -1,5 +1,5 @@
 # Utiliser une image officielle PHP légère avec serveur web intégré
-FROM php:8.2-cli
+FROM php:8.4-cli-alpine3.18
 
 # Définir le dossier de travail
 WORKDIR /var/www/html
