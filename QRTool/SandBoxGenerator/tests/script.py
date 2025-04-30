@@ -1,21 +1,26 @@
 import ansible_runner
 
-def run_playbook(playbook_path, inventory_path=None, extravars=None):
-    result = ansible_runner.run(
-        private_data_dir='.',
-        playbook=playbook_path,
-        inventory=inventory_path,
-        extravars=extravars
-    )
-
-    print("Statut de l'exécution :", result.status)  # "successful", "failed", etc.
-    print("Code de retour :", result.rc)
-    for event in result.events:
-        print(event['event'], event.get('stdout', ''))
-
-# Exemple d'utilisation
-run_playbook(
-    playbook_path='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml',
-    inventory_path='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory',
+# Étape 1 : Exécute uniquement les tâches de scan
+result = ansible_runner.run(
+    private_data_dir='.',
+    playbook='/home/gitlab-runner/workspace-ansible/qr-code/tests/playbook_tests.yml',
+    inventory='/home/gitlab-runner/workspace-ansible/qr-code/tests/inventory',
+    tags='creation_sandbox,scan',
     extravars={'url_a_tester': 'https://www.google.com/'}
+)
+
+# Récupère et affiche le résultat du scan
+for event in result.events:
+    if event.get('event') == 'runner_on_ok':
+        task = event['event_data']['task']
+        if task == 'Show analysis results':
+            print("✔ Résultat du scan :")
+            print(event['event_data']['res']['msg'])
+
+# Étape 2 : Exécute ensuite le nettoyage
+ansible_runner.run(
+    private_data_dir='.',
+    playbook='/home/gitlab-runner/workspace-ansible/qr-code/tests/playbook_tests.yml',
+    inventory='/home/gitlab-runner/workspace-ansible/qr-code/tests/inventory',
+    tags='cleaning'
 )

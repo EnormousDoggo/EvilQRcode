@@ -4,11 +4,13 @@
   command: docker images -q kalilinux/kali-rolling
   register: kali_image
   changed_when: false
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Download Kali Linux image if missing
   command: docker pull kalilinux/kali-rolling
   when: kali_image.stdout == ""
   become: true
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Create and start the Kali container on the secure network
   docker_container:
@@ -23,24 +25,29 @@
       - 8.8.4.4
     restart_policy: always
   become: true
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Check the status of the Kali container
   command: docker ps -f "name=qrcode_sandbox" --format "{{ '{{' }}.Status{{ '}}' }}"
   register: container_status
   changed_when: false
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Show container status
   debug:
     msg: "Statut de la sandbox : {{ container_status.stdout }}"
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Check Kali Linux version in sandbox
   shell: docker exec qrcode_sandbox cat /etc/os-release
   register: kali_version
   changed_when: false
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Show Kali version
   debug:
     msg: "{{ kali_version.stdout_lines }}"
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Install tools in the sandbox
   shell: | 
@@ -48,26 +55,32 @@
     docker exec -it qrcode_sandbox apt install -y iputils-ping iproute2 curl dnsutils procps wget chromium
   register: installed_tools
   become: true
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 #- name: Show installed tools
 #  debug:
 #    msg: "{{ installed_tools.stdout_lines }}"
+#  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Check that the network is cut off
   shell: docker exec -it qrcode_sandbox ping -c 4 8.8.8.8
   register: network_test
   ignore_errors: yes
   changed_when: false
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Show network test result
   debug:
     msg: "Network test : {{ 'No network access' if network_test.rc != 0 else 'Network access active ! ⚠️' }}"
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Check available disk space
   shell: docker exec qrcode_sandbox df -h /
   register: disk_usage
   changed_when: false
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Show disk space
   debug:
     msg: "{{ disk_usage.stdout_lines }}"
+  tags: ["docker", "creation_sandbox", "sandbox"]

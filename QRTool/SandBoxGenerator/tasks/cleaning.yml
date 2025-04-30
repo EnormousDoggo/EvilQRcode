@@ -7,6 +7,7 @@
     state: absent
     force_kill: yes
   become: true
+  tags: ["docker", "sandbox", "cleaning"]
 
 - name: Uninstall Docker 
   apt:
@@ -14,3 +15,4 @@
     state: absent
   become: true
   when: remove_docker|default(false)
+  tags: ["docker", "sandbox", "cleaning"]

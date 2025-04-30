@@ -18,8 +18,10 @@
   register: scan_result
   ignore_errors: yes
   changed_when: false
+  tags: ["docker", "sandbox", "scan"]
   
 - name: Show analysis results
   debug:
     msg: "{{ scan_result.stdout }}"
   ignore_errors: yes
+  tags: ["docker", "sandbox", "scan"]

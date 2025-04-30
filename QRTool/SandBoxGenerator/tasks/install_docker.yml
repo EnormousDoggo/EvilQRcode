@@ -30,8 +30,8 @@
 - name: "Set Docker APT repository variable"
   set_fact:
     docker_apt_repo: >-
-      {% if ansible_distribution == 'Ubuntu' %}
-      deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+      {% if ansible_distribution_release == "bookworm" %}
+      deb [arch={{ deb_arch.stdout }} signed-by=/etc/apt/keyrings/docker.asc] {{ docker_repo_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}
       {% else %}
       deb [arch={{ deb_arch.stdout }}] {{ docker_repo_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}
       {% endif %}
@@ -85,11 +85,14 @@
     state: started
     enabled: yes
   become: true
+  tags: ["install", "docker"]
 
 - name: "Check that Docker is working"
   command: docker --version
   register: docker_version
   changed_when: false
+  tags: ["install", "docker"]
 
 - debug:
     msg: "Docker installed : {{ docker_version.stdout }}"
+  tags: ["install", "docker"]

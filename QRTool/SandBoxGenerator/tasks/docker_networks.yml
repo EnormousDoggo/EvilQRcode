@@ -8,15 +8,18 @@
     ipam_config:
       - subnet: "192.168.50.0/24"  # Private IP range for Kali
   become: true
+  tags: ["docker", "networks"]
 
 - name: Check the Docker Networks List
   command: docker network ls
   register: docker_networks
   changed_when: false
+  tags: ["docker", "networks"]
 
 - name: Show existing Docker networks
   debug:
     msg: "{{ docker_networks.stdout_lines }}"
+  tags: ["docker", "networks"]
 
 
 ### Create a NAT container that acts as an internet proxy for Kali ###
@@ -32,3 +35,4 @@
       - name: sandbox_network
     privileged: yes  # Required to modify iptables
   become: true
+  tags: ["docker", "networks"]

@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from VirusTotalAPI.scanner import scan_url
+from VirusTotalAPI.scanner import scan_url as VTscan
+from SandBoxGenerator.tests.script import run_playbook
 
 app = Flask(__name__)
 
@@ -24,8 +25,11 @@ with app.app_context():
 def process_url(url):
     # Placeholder for processing logic
     print(f"Processing URL: {url}")
-    stats = scan_url(url)  # Call the scan_url function from scanner.py
-    return {"malveillants": [stats['malicious']], "inoffensifs": [stats['harmless']]}
+    stats = VTscan(url)  # Call the scan_url function from scanner.py
+    VTResult = {"malveillants": [stats['malicious']], "inoffensifs": [stats['harmless']]}
+    SandboxResult = run_playbook(url)  # Call the run_playbook function from script.py
+    print(SandboxResult)
+    return VTResult
 
 # Endpoint to serve Scan QR code
 @app.route('/')

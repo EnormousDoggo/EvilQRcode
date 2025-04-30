@@ -6,13 +6,17 @@
 
 - name: Docker Networks
   include_tasks: docker_networks.yml
+  tags: ["docker", "networks"]
 
 - name: Creating the Sandbox in a Docker Container
   include_tasks: creating_sandbox.yml
+  tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Test Execution
   include_tasks: test_execution.yml
+  tags: ["docker", "sandbox", "scan"]
 
 - name: Cleaning the Sandbox and Docker
   include_tasks: cleaning.yml
   when: cleaning|default(false)
+  tags: ["docker", "sandbox", "cleaning"]

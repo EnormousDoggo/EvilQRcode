@@ -1,5 +1,5 @@
-[servers]
+[debian]
 server2
 
-[servers:vars]
+[debian:vars]
 ansible_user=root
