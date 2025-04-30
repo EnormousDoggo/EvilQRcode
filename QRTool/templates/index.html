@@ -1,68 +1,216 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scanner un QR Code</title>
     <script src="{{ url_for('static', filename='js/html5-qrcode.min.js') }}"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #007bff;
+        }
+
+        #reader {
+        width: 100%;
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 15px;
+        background: white;
+        border: 2px dashed #007bff;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        #result, #processing {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.2em;
+        }
+
+        #processing {
+            color: #ffc107;
+            font-weight: bold;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0.5; }
+        }
+
+        #output {
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto 0;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+
+        .list-group {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .list-group li {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            background: #f1f1f1;
+            transition: background 0.3s;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .list-group li:hover {
+            background: #e2e6ea;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.6em; }
+            h2 { font-size: 1.3em; }
+            .list-group li { font-size: 0.95em; }
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4em; }
+            h2 { font-size: 1.1em; }
+            .list-group li { font-size: 0.9em; }
+        }
+        #processing, #result {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>Scanner un QR Code</h1>
-    <div id="reader" style="width: 300px;"></div>
+
+    <div id="reader"></div>
+
+    <div id="buttons" style="text-align: center; margin-top: 20px;">
+        <button id="rescan-btn" style="display: none; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            🔄 Scanner un autre QR Code
+        </button>
+    </div>
+
     <div id="result"></div>
-    <div id="processing" style="display: none;">Processing...</div>
+    <div id="processing" style="display: none;">Traitement...</div>
+
     <div id="output">
         <h2>Malveillants</h2>
-        <ul id="malveillants-list"></ul>
+        <ul id="malveillants-list" class="list-group"></ul>
+
         <h2>Inoffensifs</h2>
-        <ul id="inoffensifs-list"></ul>
+        <ul id="inoffensifs-list" class="list-group"></ul>
     </div>
 
     <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            document.getElementById("result").innerText = "QR détecté : " + decodedText;
-            document.getElementById("processing").style.display = "block"; // Show "Processing"
-
-            fetch("/url", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
+        const scanner = new Html5Qrcode("reader");
+    
+        function startScanner() {
+            scanner.start(
+                { facingMode: "environment" }, // Caméra arrière
+                {
+                    fps: 10,
+                    qrbox: 250
                 },
-                body: JSON.stringify({ url: decodedText })
-            }).then(response => response.json())
-              .then(data => {
-                  console.log("Réponse :", data);
-                  document.getElementById("processing").style.display = "none"; // Hide "Processing"
-
-                  // Update the results dynamically
-                  const malveillantsList = document.getElementById("malveillants-list");
-                  const inoffensifsList = document.getElementById("inoffensifs-list");
-
-                  if (data.malveillants && data.malveillants.length > 0) {
-                      data.malveillants.forEach(item => {
-                          const li = document.createElement("li");
-                          li.textContent = item;
-                          malveillantsList.appendChild(li);
-                      });
-                  }
-
-                  if (data.inoffensifs && data.inoffensifs.length > 0) {
-                      data.inoffensifs.forEach(item => {
-                          const li = document.createElement("li");
-                          li.textContent = item;
-                          inoffensifsList.appendChild(li);
-                      });
-                  }
-
-                  alert("URL enregistrée et traitée : " + decodedText);
-              }).catch(err => {
-                  console.error("Erreur :", err);
-                  document.getElementById("processing").style.display = "none"; // Hide "Processing"
-              });
+                onScanSuccess
+            ).catch(err => {
+                console.error("Erreur de démarrage du scanner :", err);
+            });
         }
-
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
+    
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log("QR détecté :", decodedText);
+    
+            // Stopper le scanner immédiatement
+            scanner.stop()
+                .then(() => {
+                    console.log("Scanner arrêté avec succès.");
+    
+                    document.getElementById("result").innerText = "QR détecté : " + decodedText;
+                    document.getElementById("processing").style.display = "block";
+    
+                    fetch("/url", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ url: decodedText })
+                    }).then(response => response.json())
+                      .then(data => {
+                          console.log("Réponse :", data);
+                          document.getElementById("processing").style.display = "none";
+    
+                          const malveillantsList = document.getElementById("malveillants-list");
+                          const inoffensifsList = document.getElementById("inoffensifs-list");
+    
+                          malveillantsList.innerHTML = "";
+                          inoffensifsList.innerHTML = "";
+    
+                          if (data.malveillants && data.malveillants.length > 0) {
+                              data.malveillants.forEach(item => {
+                                  const li = document.createElement("li");
+                                  li.textContent = item;
+                                  malveillantsList.appendChild(li);
+                              });
+                          }
+    
+                          if (data.inoffensifs && data.inoffensifs.length > 0) {
+                              data.inoffensifs.forEach(item => {
+                                  const li = document.createElement("li");
+                                  li.textContent = item;
+                                  inoffensifsList.appendChild(li);
+                              });
+                          }
+    
+                          alert("URL enregistrée et traitée : " + decodedText);
+    
+                          // Après scan et traitement : afficher le bouton Rescanner
+                          document.getElementById("rescan-btn").style.display = "inline-block";
+                      }).catch(err => {
+                          console.error("Erreur dans la réponse :", err);
+                          document.getElementById("processing").style.display = "none";
+                      });
+                })
+                .catch(err => {
+                    console.error("Erreur pour stopper le scanner :", err);
+                });
+        }
+    
+        // Lancer au début
+        startScanner();
+    
+        // Gérer bouton rescanner
+        document.getElementById("rescan-btn").addEventListener("click", () => {
+            document.getElementById("rescan-btn").style.display = "none";
+            document.getElementById("result").innerText = "";
+            startScanner();
+        });
     </script>
 </body>
 </html>
