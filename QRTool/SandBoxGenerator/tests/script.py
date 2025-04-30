@@ -1,14 +1,14 @@
 import ansible_runner
 
-private_data_dir='.',
-playbook='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml',
-inventory='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory',
+globalPrivate_data_dir='.'
+globalPlaybook='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml'
+globalInventory='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory'
 
 def create_sandbox(url):
     ansible_runner.run(
-        private_data_dir=private_data_dir,
-        playbook=playbook,
-        inventory=inventory,
+        private_data_dir=globalPrivate_data_dir,
+        playbook=globalPlaybook,
+        inventory=globalInventory,
         tags='creation_sandbox,scan',
         extravars={'url_a_tester': 'https://www.google.com/'}
         )
@@ -25,9 +25,9 @@ def display_result(result):
 
 def kill_sandbox():
     ansible_runner.run(
-        private_data_dir=private_data_dir,
-        playbook=playbook,
-        inventory=inventory,
+        private_data_dir=globalPrivate_data_dir,
+        playbook=globalPlaybook,
+        inventory=globalInventory,
         tags='cleaning'
         )
     return 0
