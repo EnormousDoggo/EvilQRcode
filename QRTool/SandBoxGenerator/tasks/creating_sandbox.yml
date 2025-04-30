@@ -1,21 +1,21 @@
 ---
 # --- Creation of the Kali Sandbox ---
 - name: Check if Kali Linux image is already present
-  command: docker images -q kalilinux/kali-rolling
+  command: docker images -q kali-custom
   register: kali_image
   changed_when: false
   tags: ["docker", "creation_sandbox", "sandbox"]
 
-- name: Download Kali Linux image if missing
-  command: docker pull kalilinux/kali-rolling
-  when: kali_image.stdout == ""
-  become: true
-  tags: ["docker", "creation_sandbox", "sandbox"]
+# - name: Download Kali Linux image if missing
+#   command: docker pull kalilinux/kali-rolling
+#   when: kali_image.stdout == ""
+#   become: true
+#   tags: ["docker", "creation_sandbox", "sandbox"]
 
 - name: Create and start the Kali container on the secure network
   docker_container:
     name: qrcode_sandbox
-    image: kalilinux/kali-rolling
+    image: kali-custom
     state: started
     command: sleep infinity # Permet de garder le conteneur actif
     networks:
