@@ -10,7 +10,7 @@ def create_sandbox(url):
         playbook=globalPlaybook,
         inventory=globalInventory,
         tags='creation_sandbox,scan',
-        extravars={'url_a_tester': 'https://www.google.com/'}
+        extravars={'url_a_tester': url}
         )
 
 def display_result(result):
