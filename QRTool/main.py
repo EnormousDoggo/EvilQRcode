@@ -22,15 +22,18 @@ with app.app_context():
     db.create_all()
 
 # Function to handle the URL (you can customize this)
-def process_url(url):
+def process_url_VT(url):
     # Placeholder for processing logic
     print(f"Processing URL: {url}")
     stats = VTscan(url)  # Call the scan_url function from scanner.py
     VTResult = {"malveillants": [stats['malicious']], "inoffensifs": [stats['harmless']]}
-    SandboxResult = create_sandbox(url)  # Call the create_sandbox function from script.py
-    display_result(SandboxResult)  # Call the display_result function from script.py
-    kill_sandbox()  # Call the kill_sandbox function from script.py
     return VTResult
+
+def process_url_sandbox(url):
+    Sandbox = create_sandbox(url)  # Call the create_sandbox function from script.py
+    SandboxResult = display_result(Sandbox)  # Call the display_result function from script.py
+    # kill_sandbox()  # Call the kill_sandbox function from script.py
+    return SandboxResult
 
 # Endpoint to serve Scan QR code
 @app.route('/')
@@ -38,7 +41,7 @@ def index():
     return render_template('index.html')
 
 # Endpoint to handle POST requests to /url
-@app.route('/url', methods=['POST'])
+@app.route('/url/vt', methods=['POST'])
 def url_endpoint():
     data = request.json
     if not data or 'url' not in data:
@@ -52,8 +55,24 @@ def url_endpoint():
     db.session.add(new_url)
     db.session.commit()
 
-    result = process_url(url)
-    print("URL received and processed")
+    result = process_url_VT(url)
+    return jsonify(result), 200
+
+@app.route('/url/vt', methods=['POST'])
+def url_endpoint():
+    data = request.json
+    if not data or 'url' not in data:
+        return jsonify({'error': 'Missing "url" parameter'}), 400
+
+    url = data['url']
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Save to database
+    new_url = URLData(url=url, timestamp=timestamp)
+    db.session.add(new_url)
+    db.session.commit()
+
+    result = process_url_sandbox(url)
     return jsonify(result), 200
 
 # Endpoint to display the admin page

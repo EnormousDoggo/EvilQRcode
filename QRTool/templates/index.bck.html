@@ -123,22 +123,16 @@
     <div id="processing" style="display: none;">Traitement...</div>
 
     <div id="output">
-        <div id="vt-block">
-            <h2>Résultat VirusTotal</h2>
-            <h3>Malveillants</h3>
-            <ul id="malveillants-list" class="list-group"></ul>
-            <h3>Inoffensifs</h3>
-            <ul id="inoffensifs-list" class="list-group"></ul>
-        </div>
-        <div id="sandbox-block" style="margin-top: 30px;">
-            <h2>Résultat Sandbox</h2>
-            <pre id="sandbox-result" style="background:#f8f9fa; padding:15px; border-radius:8px; min-height:40px;"></pre>
-        </div>
+        <h2>Malveillants</h2>
+        <ul id="malveillants-list" class="list-group"></ul>
+
+        <h2>Inoffensifs</h2>
+        <ul id="inoffensifs-list" class="list-group"></ul>
     </div>
 
     <script>
         const scanner = new Html5Qrcode("reader");
-
+    
         function startScanner() {
             scanner.start(
                 { facingMode: "environment" }, // Caméra arrière
@@ -151,94 +145,70 @@
                 console.error("Erreur de démarrage du scanner :", err);
             });
         }
-
+    
         function onScanSuccess(decodedText, decodedResult) {
             console.log("QR détecté :", decodedText);
-
+    
             // Stopper le scanner immédiatement
             scanner.stop()
                 .then(() => {
                     console.log("Scanner arrêté avec succès.");
-
+    
                     document.getElementById("result").innerText = "QR détecté : " + decodedText;
                     document.getElementById("processing").style.display = "block";
-
-                    // 1. Fetch VT result
-                    fetch("/url/vt", {
+    
+                    fetch("/url", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ url: decodedText, feature: "VT" })
+                        body: JSON.stringify({ url: decodedText })
                     }).then(response => response.json())
                       .then(data => {
-                          // VT Results
+                          console.log("Réponse :", data);
+                          document.getElementById("processing").style.display = "none";
+    
                           const malveillantsList = document.getElementById("malveillants-list");
                           const inoffensifsList = document.getElementById("inoffensifs-list");
+    
                           malveillantsList.innerHTML = "";
                           inoffensifsList.innerHTML = "";
-
-                          let vt = data.VTResult || data;
-                          if (vt.malveillants && vt.malveillants.length > 0) {
-                              vt.malveillants.forEach(item => {
+    
+                          if (data.malveillants && data.malveillants.length > 0) {
+                              data.malveillants.forEach(item => {
                                   const li = document.createElement("li");
                                   li.textContent = item;
                                   malveillantsList.appendChild(li);
                               });
                           }
-                          if (vt.inoffensifs && vt.inoffensifs.length > 0) {
-                              vt.inoffensifs.forEach(item => {
+    
+                          if (data.inoffensifs && data.inoffensifs.length > 0) {
+                              data.inoffensifs.forEach(item => {
                                   const li = document.createElement("li");
                                   li.textContent = item;
                                   inoffensifsList.appendChild(li);
                               });
                           }
-                      })
-                      .catch(err => {
-                          console.error("Erreur VirusTotal :", err);
-                      });
-
-                    // 2. Fetch Sandbox result
-                    fetch("/url/sandbox", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ url: decodedText, feature: "Sandbox" })
-                    }).then(response => response.json())
-                      .then(data => {
-                          // Sandbox Results
-                          const sandboxResult = document.getElementById("sandbox-result");
-                          if (data.SandboxResult) {
-                              if (typeof data.SandboxResult === "object") {
-                                  sandboxResult.textContent = JSON.stringify(data.SandboxResult, null, 2);
-                              } else {
-                                  sandboxResult.textContent = data.SandboxResult;
-                              }
-                          } else {
-                              sandboxResult.textContent = "Aucun résultat Sandbox.";
-                          }
-                      })
-                      .catch(err => {
-                          console.error("Erreur Sandbox :", err);
-                      })
-                      .finally(() => {
-                          document.getElementById("processing").style.display = "none";
+    
                           alert("URL enregistrée et traitée : " + decodedText);
+    
+                          // Après scan et traitement : afficher le bouton Rescanner
                           document.getElementById("rescan-btn").style.display = "inline-block";
+                      }).catch(err => {
+                          console.error("Erreur dans la réponse :", err);
+                          document.getElementById("processing").style.display = "none";
                       });
                 })
                 .catch(err => {
                     console.error("Erreur pour stopper le scanner :", err);
                 });
         }
-
+    
         // Lancer au début
         startScanner();
-
+    
         // Gérer bouton rescanner
         document.getElementById("rescan-btn").addEventListener("click", () => {
             document.getElementById("rescan-btn").style.display = "none";
             document.getElementById("result").innerText = "";
-            document.getElementById("malveillants-list").innerHTML = "";
-            document.getElementById("inoffensifs-list").innerHTML = "";
-            document.getElementById("sandbox-result").textContent = "";
             startScanner();
         });
     </script>

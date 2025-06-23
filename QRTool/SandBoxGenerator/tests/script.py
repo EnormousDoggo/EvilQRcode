@@ -4,13 +4,13 @@ globalPrivate_data_dir='.'
 globalPlaybook='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml'
 globalInventory='/root/docker/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory'
 
-def create_sandbox(url):
+def create_sandbox(url, id):
     return ansible_runner.run(
         private_data_dir=globalPrivate_data_dir,
         playbook=globalPlaybook,
         inventory=globalInventory,
         tags='creation_sandbox,scan',
-        extravars={'url_a_tester': url}
+        extravars={'url_a_tester': url, 'id':id}
         )
 
 def display_result(result):
@@ -37,4 +37,3 @@ if __name__ == "__main__":
     result = create_sandbox(url)
     display_result(result)
     kill_sandbox()
-

@@ -1,5 +1,0 @@
-[1;35m[WARNING]: You are running the development version of Ansible. You should only[0m
-[1;35mrun Ansible from "devel" if you are modifying the Ansible engine, or trying out[0m
-[1;35mfeatures under development. This is a rapidly changing source of code and can[0m
-[1;35mbecome unstable at any point.[0m
-[0;31mERROR! the playbook: tests/playbook_tests.yml could not be found[0m
