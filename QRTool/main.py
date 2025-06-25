@@ -40,24 +40,7 @@ def process_url_sandbox(url):
 def index():
     return render_template('index.html')
 
-# Endpoint to handle POST requests to /url
-@app.route('/url/vt', methods=['POST'])
-def url_endpoint():
-    data = request.json
-    if not data or 'url' not in data:
-        return jsonify({'error': 'Missing "url" parameter'}), 400
-
-    url = data['url']
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    # Save to database
-    new_url = URLData(url=url, timestamp=timestamp)
-    db.session.add(new_url)
-    db.session.commit()
-
-    result = process_url_VT(url)
-    return jsonify(result), 200
-
+# Endpoint to handle POST requests to /url/vt
 @app.route('/url/vt', methods=['POST'])
 def url_endpoint():
     data = request.json
@@ -87,4 +70,4 @@ def get_urls():
     return jsonify([{'url': url.url, 'timestamp': url.timestamp} for url in urls])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=50000)
+    app.run(host='localhost', port=50000)
