@@ -51,4 +51,4 @@ def kill_sandbox(id_container):
     )
 
 if __name__ == '__main__':
-    create_sandbox("pwnedme.com/")
+    create_sandbox("pwnedme.com")
