@@ -70,4 +70,4 @@ def get_urls():
     return jsonify([{'url': url.url, 'timestamp': url.timestamp} for url in urls])
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=50000)
+    app.run(host='0.0.0.0', port=50000, debug=True)

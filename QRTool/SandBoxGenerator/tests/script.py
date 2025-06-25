@@ -3,14 +3,16 @@ import uuid
 import os
 
 RESULTS_DIR = "results"
+PLAYBOOK_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml"
+INVENTORY_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 def create_sandbox(url):
     id_container = f"sandbox_{uuid.uuid4().hex[:8]}"
     result = ansible_runner.run(
         private_data_dir='.',
-        playbook='/home/gitlab-runner/workspace-ansible/qr-code/tests/playbook_tests.yml',
-        inventory='/home/gitlab-runner/workspace-ansible/qr-code/tests/inventory',
+        playbook=PLAYBOOK_DIR,
+        inventory=INVENTORY_DIR,
         tags='creation_sandbox,scan',
         extravars={
             'url_a_tester': url,
@@ -42,8 +44,11 @@ def display_result(id_container):
 def kill_sandbox(id_container):
     ansible_runner.run(
         private_data_dir='.',
-        playbook='/home/gitlab-runner/workspace-ansible/qr-code/tests/playbook_tests.yml',
-        inventory='/home/gitlab-runner/workspace-ansible/qr-code/tests/inventory',
+        playbook=PLAYBOOK_DIR,
+        inventory=INVENTORY_DIR,
         tags='clean',
         extravars={'id_container': id_container}
     )
+
+if __name__ == '__main__':
+    create_sandbox("pwnedme.com/")
