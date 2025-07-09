@@ -1,27 +1,35 @@
 ---
 # --- Scanning the URL in the Sandbox ---
 
-#- name: Analyze URL in sandbox
-#  shell: |
-#    docker exec qrcode_sandbox wget --spider {{ url_a_tester }}
-#  register: scan_result
-#  ignore_errors: yes
-#  become: true
-
-#- name: Show analysis results
-#  debug:
-#    msg: "{{ scan_result.stdout }}"
-#  ignore_errors: yes
-
-- name: Analyze URL in sandbox
-  shell: docker exec qrcode_sandbox curl -I {{ url_a_tester }}
-  register: scan_result
-  ignore_errors: yes
-  changed_when: false
+- name: Ensure results directory exists (on remote machine)
+  file:
+    path: /tmp/results
+    state: directory
+  delegate_to: server2 
   tags: ["docker", "sandbox", "scan"]
-  
-- name: Show analysis results
-  debug:
-    msg: "{{ scan_result.stdout }}"
-  ignore_errors: yes
+
+- name: Deploy the script in the container (via template)
+  template:
+    src: script.sh.j2
+    dest: /tmp/scan.sh
+    mode: '0755'
+  delegate_to: server2
+  tags: ["docker", "sandbox", "scan"]
+
+- name: Copy the script into the container
+  shell: docker cp /tmp/scan.sh qrcode_sandbox:/tmp/scan.sh
+  delegate_to: server2
+  tags: ["docker", "sandbox", "scan"]
+
+- name: Start the scan in the container
+  shell: docker exec qrcode_sandbox bash /tmp/scan.sh "{{ url_a_tester }}" > /tmp/results/{{ id_container }}.txt
+  delegate_to: server2
+  tags: ["docker", "sandbox", "scan"]
+
+- name: Repatriate the result to the control node (Ansible machine)
+  fetch:
+    src: /tmp/results/{{ id_container }}.txt
+    dest: /root/containers/EvilQRcode/QRTool/SandBoxGenerator/results/{{ id_container }}.txt
+    flat: yes
+  delegate_to: server2
   tags: ["docker", "sandbox", "scan"]

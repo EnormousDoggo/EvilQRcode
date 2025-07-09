@@ -58,6 +58,10 @@ def url_endpoint():
     result = process_url_sandbox(url)
     return jsonify(result), 200
 
+@app.route('/url/sandbox', methods=['POST'])
+def sandbox():
+    pass #TODO
+
 # Endpoint to display the admin page
 @app.route('/admin', methods=['GET'])
 def admin_page():
