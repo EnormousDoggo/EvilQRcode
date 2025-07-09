@@ -1,11 +1,14 @@
 # Utilise l'image officielle Kali Rolling comme base
 FROM kalilinux/kali-rolling
 
+# Set non-interactive mode globally for the entire build
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Met à jour le système et installe les outils nécessaires
 RUN apt-get update && apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
     curl \
-    dig \
+    #dig \
     whois \
     openssl \
     jq \
@@ -19,11 +22,16 @@ RUN apt-get update && apt-get upgrade -y && \
     procps \
     wget \
     chromium \
-    && apt-get clean 
+    #python3-wafw00f \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # wafw00f nécessite parfois une mise à jour ou installation via pip
-RUN pip3 install --upgrade pip && \
-    pip3 install wafw00f
+#RUN pip3 install --upgrade pip && \
+#    pip3 install wafw00f
+
+# Remove ENV in final image
+RUN echo "unset DEBIAN_FRONTEND" >> ~/.bashrc
 
 # Définir le point d’entrée par défaut
 CMD [ "bash" ]

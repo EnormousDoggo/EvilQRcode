@@ -55,12 +55,25 @@ def url_endpoint():
     db.session.add(new_url)
     db.session.commit()
 
-    result = process_url_sandbox(url)
+    result = process_url_VT(url)
     return jsonify(result), 200
 
 @app.route('/url/sandbox', methods=['POST'])
 def sandbox():
-    pass #TODO
+    data = request.json
+    if not data or 'url' not in data:
+        return jsonify({'error': 'Missing "url" parameter'}), 400
+
+    url = data['url']
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Save to database
+    new_url = URLData(url=url, timestamp=timestamp)
+    db.session.add(new_url)
+    db.session.commit()
+
+    result = process_url_sandbox(url)
+    return jsonify(result), 200
 
 # Endpoint to display the admin page
 @app.route('/admin', methods=['GET'])
