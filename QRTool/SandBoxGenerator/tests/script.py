@@ -3,8 +3,6 @@ import uuid
 import os
 
 RESULTS_DIR = "results"
-PLAYBOOK_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml"
-INVENTORY_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 def create_sandbox(url):
