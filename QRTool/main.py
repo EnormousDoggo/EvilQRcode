@@ -75,6 +75,7 @@ def sandbox():
     db.session.commit()
 
     result = process_url_sandbox(url)
+    print(f"\n\n\nSandbox result: {result}\n\n\n")
     return jsonify(result), 200
 
 # Endpoint to display the admin page

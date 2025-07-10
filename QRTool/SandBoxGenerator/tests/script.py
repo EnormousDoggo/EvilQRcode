@@ -19,7 +19,6 @@ async def create_sandbox(url):
             'id_container': id_container
         }
     )
-
     return id_container
 
 def display_result(id_container):
