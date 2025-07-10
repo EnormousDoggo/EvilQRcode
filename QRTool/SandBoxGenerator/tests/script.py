@@ -7,9 +7,9 @@ PLAYBOOK_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/playbo
 INVENTORY_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
-def create_sandbox(url):
+async def create_sandbox(url):
     id_container = f"sandbox_{uuid.uuid4().hex[:8]}"
-    ansible_runner.run(
+    await ansible_runner.run(
         private_data_dir='.',
         playbook=PLAYBOOK_DIR,
         inventory=INVENTORY_DIR,

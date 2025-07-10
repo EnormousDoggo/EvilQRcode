@@ -29,9 +29,11 @@ def process_url_VT(url):
     VTResult = {"malveillants": [stats['malicious']], "inoffensifs": [stats['harmless']]}
     return VTResult
 
-def process_url_sandbox(url):
-    Sandbox = create_sandbox(url)  # Call the create_sandbox function from script.py
-    SandboxResult = display_result(Sandbox)  # Call the display_result function from script.py
+async def process_url_sandbox(url):
+    Sandbox = await create_sandbox(url)  # Call the create_sandbox function from script.py
+    print(f"Sandbox created with ID: {Sandbox}")
+    SandboxResult = await display_result(Sandbox)  # Call the display_result function from script.py
+    print(f"Sandbox result: {SandboxResult}")
     # kill_sandbox()  # Call the kill_sandbox function from script.py
     return SandboxResult
 
