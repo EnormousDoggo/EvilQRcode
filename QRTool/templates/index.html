@@ -204,6 +204,7 @@
                     }).then(response => response.json())
                       .then(data => {
                           // Sandbox Results
+                          console.log("Résultat Sandbox :", data);
                           const sandboxResult = document.getElementById("sandbox-result");
                           if (data.SandboxResult) {
                               if (typeof data.SandboxResult === "object") {
