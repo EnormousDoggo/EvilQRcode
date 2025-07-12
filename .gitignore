@@ -2,6 +2,7 @@ instance/
 venv
 VirusTotalAPI/venv
 VirusTotalAPI/.env
+VirusTotalAPI/__pycache__
 .DS_Store
 /BadServer/email.txt
 artifacts
