@@ -29,10 +29,10 @@ def process_url_VT(url):
     VTResult = {"malveillants": [stats['malicious']], "inoffensifs": [stats['harmless']]}
     return VTResult
 
-async def process_url_sandbox(url):
-    Sandbox = await create_sandbox(url)  # Call the create_sandbox function from script.py
+def process_url_sandbox(url):
+    Sandbox = create_sandbox(url)  # Call the create_sandbox function from script.py
     print(f"Sandbox created with ID: {Sandbox}")
-    SandboxResult = await display_result(Sandbox)  # Call the display_result function from script.py
+    SandboxResult = display_result(Sandbox)  # Call the display_result function from script.py
     print(f"Sandbox result: {SandboxResult}")
     # kill_sandbox()  # Call the kill_sandbox function from script.py
     return SandboxResult
@@ -61,7 +61,7 @@ def url_endpoint():
     return jsonify(result), 200
 
 @app.route('/url/sandbox', methods=['POST'])
-async def sandbox():
+def sandbox():
     data = request.json
     if not data or 'url' not in data:
         return jsonify({'error': 'Missing "url" parameter'}), 400
@@ -74,7 +74,7 @@ async def sandbox():
     db.session.add(new_url)
     db.session.commit()
 
-    result = await process_url_sandbox(url)
+    result = process_url_sandbox(url)
     print(f"\n\n\nSandbox result: {result}\n\n\n")
     return jsonify(result), 200
 
