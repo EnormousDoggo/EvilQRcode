@@ -206,11 +206,11 @@
                           // Sandbox Results
                           console.log("Résultat Sandbox :", data);
                           const sandboxResult = document.getElementById("sandbox-result");
-                          if (data.SandboxResult) {
-                              if (typeof data.SandboxResult === "object") {
-                                  sandboxResult.textContent = JSON.stringify(data.SandboxResult, null, 2);
+                          if (data) {
+                              if (typeof data === "object") {
+                                  sandboxResult.textContent = JSON.stringify(data, null, 2);
                               } else {
-                                  sandboxResult.textContent = data.SandboxResult;
+                                  sandboxResult.textContent = data;
                               }
                           } else {
                               sandboxResult.textContent = "Aucun résultat Sandbox.";
