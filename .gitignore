@@ -5,3 +5,4 @@ VirusTotalAPI/.env
 .DS_Store
 /BadServer/email.txt
 artifacts
+QRTool/SandBoxGenerator/results

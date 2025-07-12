@@ -61,7 +61,7 @@ def url_endpoint():
     return jsonify(result), 200
 
 @app.route('/url/sandbox', methods=['POST'])
-def sandbox():
+async def sandbox():
     data = request.json
     if not data or 'url' not in data:
         return jsonify({'error': 'Missing "url" parameter'}), 400
@@ -74,7 +74,7 @@ def sandbox():
     db.session.add(new_url)
     db.session.commit()
 
-    result = process_url_sandbox(url)
+    result = await process_url_sandbox(url)
     print(f"\n\n\nSandbox result: {result}\n\n\n")
     return jsonify(result), 200
 

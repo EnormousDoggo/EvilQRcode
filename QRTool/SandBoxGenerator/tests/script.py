@@ -2,14 +2,14 @@ import ansible_runner
 import uuid
 import os
 
-RESULTS_DIR = "results"
+RESULTS_DIR = "SandBoxGenerator/results"
 PLAYBOOK_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/playbook_tests.yml"
 INVENTORY_DIR = "/root/containers/EvilQRcode/QRTool/SandBoxGenerator/tests/inventory"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
-async def create_sandbox(url):
+def create_sandbox(url):
     id_container = f"sandbox_{uuid.uuid4().hex[:8]}"
-    await ansible_runner.run(
+    ansible_runner.run(
         private_data_dir='.',
         playbook=PLAYBOOK_DIR,
         inventory=INVENTORY_DIR,
@@ -37,3 +37,6 @@ def kill_sandbox(id_container):
         tags='clean',
         extravars={'id_container': id_container}
     )
+
+if __name__ == '__main__' :
+    create_sandbox("https://qrto.org/mumUSL")  # Example URL for testing
